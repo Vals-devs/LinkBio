@@ -16,7 +16,8 @@ Route::get('/run-migrations', function () {
         return response()->json(['status' => 'unauthorized'], 401);
     }
     try {
-        \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+        $command = request('fresh') === 'true' ? 'migrate:fresh' : 'migrate';
+        \Illuminate\Support\Facades\Artisan::call($command, ['--force' => true]);
         \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
         return response()->json([
             'status' => 'success',
