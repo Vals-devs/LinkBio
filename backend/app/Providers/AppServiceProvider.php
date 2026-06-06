@@ -19,6 +19,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // Pastikan view compiled disimpan di /tmp untuk environment serverless (Vercel)
+        if (config('app.env') === 'production') {
+            if (!is_dir('/tmp/views')) {
+                mkdir('/tmp/views', 0755, true);
+            }
+            config(['view.compiled' => '/tmp/views']);
+        }
     }
 }
