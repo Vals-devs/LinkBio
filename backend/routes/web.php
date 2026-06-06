@@ -31,14 +31,3 @@ Route::get('/run-migrations', function () {
     }
 });
 
-Route::get('/test-db-config', function () {
-    if (request('key') !== 'ival_secret_key_123') {
-        return response()->json(['status' => 'unauthorized'], 401);
-    }
-    return response()->json([
-        'pgsql' => config('database.connections.pgsql'),
-        'db_url' => env('DATABASE_URL') ? 'set' : 'not set',
-        'db_url_value' => env('DATABASE_URL') ? substr(env('DATABASE_URL'), 0, 30) . '...' : null,
-    ]);
-});
-
