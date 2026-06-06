@@ -18,6 +18,9 @@ return Application::configure(basePath: dirname(__DIR__))
         // Render semua exception sebagai JSON untuk menghindari error view tidak ditemukan di serverless
         $exceptions->render(function (\Throwable $e) {
             header('Content-Type: application/json');
+            header('Access-Control-Allow-Origin: *');
+            header('Access-Control-Allow-Methods: *');
+            header('Access-Control-Allow-Headers: *');
             http_response_code(500);
             echo json_encode([
                 'error' => true,
