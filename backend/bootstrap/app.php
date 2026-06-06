@@ -15,5 +15,20 @@ return Application::configure(basePath: dirname(__DIR__))
         //
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        // Render semua exception sebagai JSON untuk menghindari error view tidak ditemukan di serverless
+        $exceptions->render(function (\Throwable $e) {
+            return response()->json([
+                'error' => true,
+                'exception' => get_class($e),
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => collect($e->getTrace())->take(10)->map(fn($t) => [
+                    'file' => $t['file'] ?? '',
+                    'line' => $t['line'] ?? '',
+                    'function' => $t['function'] ?? '',
+                    'class' => $t['class'] ?? '',
+                ])
+            ], 500);
+        });
     })->create();
