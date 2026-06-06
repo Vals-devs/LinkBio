@@ -3,6 +3,66 @@
 use Illuminate\Support\Str;
 use Pdo\Mysql;
 
+$dbUrl = env('DATABASE_URL') ?: env('DB_URL');
+$pgsqlConfig = [
+    'driver' => 'pgsql',
+    'host' => env('DB_HOST', '127.0.0.1'),
+    'port' => env('DB_PORT', '5432'),
+    'database' => env('DB_DATABASE', 'laravel'),
+    'username' => env('DB_USERNAME', 'root'),
+    'password' => env('DB_PASSWORD', ''),
+    'charset' => env('DB_CHARSET', 'utf8'),
+    'prefix' => '',
+    'prefix_indexes' => true,
+    'search_path' => 'public',
+    'sslmode' => env('DB_SSLMODE', 'prefer'),
+];
+
+if ($dbUrl) {
+    $parsedUrl = parse_url($dbUrl);
+    if ($parsedUrl !== false) {
+        if (isset($parsedUrl['host'])) {
+            $pgsqlConfig['host'] = rawurldecode($parsedUrl['host']);
+        }
+        if (isset($parsedUrl['port'])) {
+            $pgsqlConfig['port'] = $parsedUrl['port'];
+        }
+        if (isset($parsedUrl['path']) && $parsedUrl['path'] !== '/') {
+            $pgsqlConfig['database'] = rawurldecode(substr($parsedUrl['path'], 1));
+        }
+        if (isset($parsedUrl['user'])) {
+            $pgsqlConfig['username'] = rawurldecode($parsedUrl['user']);
+        }
+        if (isset($parsedUrl['pass'])) {
+            $pgsqlConfig['password'] = rawurldecode($parsedUrl['pass']);
+        }
+        
+        $sslmode = env('DB_SSLMODE', 'prefer');
+        $endpoint = null;
+
+        if (isset($parsedUrl['query'])) {
+            parse_str($parsedUrl['query'], $query);
+            if (isset($query['sslmode'])) {
+                $sslmode = $query['sslmode'];
+            }
+            if (isset($query['options'])) {
+                $endpoint = $query['options'];
+            }
+            foreach ($query as $key => $value) {
+                if ($key !== 'sslmode' && $key !== 'options') {
+                    $pgsqlConfig[$key] = $value;
+                }
+            }
+        }
+
+        if ($endpoint) {
+            $pgsqlConfig['sslmode'] = "{$sslmode};options={$endpoint}";
+        } else {
+            $pgsqlConfig['sslmode'] = $sslmode;
+        }
+    }
+}
+
 return [
 
     /*
@@ -84,20 +144,7 @@ return [
             ]) : [],
         ],
 
-        'pgsql' => [
-            'driver' => 'pgsql',
-            'url' => env('DB_URL'),
-            'host' => env('DB_HOST', '127.0.0.1'),
-            'port' => env('DB_PORT', '5432'),
-            'database' => env('DB_DATABASE', 'laravel'),
-            'username' => env('DB_USERNAME', 'root'),
-            'password' => env('DB_PASSWORD', ''),
-            'charset' => env('DB_CHARSET', 'utf8'),
-            'prefix' => '',
-            'prefix_indexes' => true,
-            'search_path' => 'public',
-            'sslmode' => env('DB_SSLMODE', 'prefer'),
-        ],
+        'pgsql' => $pgsqlConfig,
 
         'sqlsrv' => [
             'driver' => 'sqlsrv',
