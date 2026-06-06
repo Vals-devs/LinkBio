@@ -7,6 +7,7 @@ Route::get('/', function () {
 });
 
 Route::get('/test', function () {
+    // Trigger fresh build to load new environment variables
     return 'Routing is working perfectly!';
 });
 
