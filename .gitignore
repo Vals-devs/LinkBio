@@ -1,0 +1,41 @@
+# Dependencies
+frontend/node_modules/
+backend/vendor/
+
+# Environment configurations
+backend/.env
+backend/.env.backup
+backend/.env.production
+
+# Build output
+frontend/dist/
+
+# Local databases
+backend/database/*.sqlite
+backend/database/*.sqlite-journal
+
+# Laravel local storage
+backend/storage/framework/cache/data/*
+backend/storage/framework/sessions/*
+backend/storage/framework/views/*
+backend/storage/testing/*
+backend/storage/logs/*.log
+backend/storage/app/public/*
+
+# OS specific files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Editor configurations
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
