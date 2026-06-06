@@ -23,6 +23,8 @@ return Application::configure(basePath: dirname(__DIR__))
                 'error' => true,
                 'exception' => get_class($e),
                 'message' => $e->getMessage(),
+                'request_uri' => $_SERVER['REQUEST_URI'] ?? '',
+                'request_path' => request()->path(),
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
                 'trace' => collect($e->getTrace())->take(10)->map(fn($t) => [
